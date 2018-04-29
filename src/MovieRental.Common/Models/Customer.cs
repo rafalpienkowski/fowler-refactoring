@@ -19,6 +19,41 @@ namespace MovieRental.Common.Models
             _rentals.Add(arg);
         }
 
+
+        private double AmountFor(Rental rental)
+        {
+            double thisAmount = 0;
+
+            switch (rental.Movie.PriceCode)
+            {
+                case Movie.REGULAR:
+                {
+                    thisAmount += 2;
+                    if (rental.DaysRented > 2)
+                    {
+                        thisAmount += (rental.DaysRented - 2) * 1.5;
+                    }
+                    break;
+                }
+                case Movie.NEW_RELEASE:
+                {
+                    thisAmount += rental.DaysRented * 3;
+                    break;
+                }
+                case Movie.CHILDRENS:
+                {
+                    thisAmount += 1.5;
+                    if (rental.DaysRented > 3)
+                    {
+                        thisAmount += (rental.DaysRented - 3) * 1.5;
+                    }
+                    break;
+                }
+            }
+
+            return thisAmount;
+        }
+
         public string Statement()
         {
             double totalAmount = 0;
@@ -30,32 +65,7 @@ namespace MovieRental.Common.Models
                 double thisAmount = 0;
 
                 //determine amounts for each line
-                switch (rental.Movie.PriceCode)
-                {
-                    case Movie.REGULAR:
-                    {
-                        thisAmount += 2;
-                        if (rental.DaysRented > 2)
-                        {
-                            thisAmount += (rental.DaysRented - 2) * 1.5;
-                        }
-                        break;
-                    }
-                    case Movie.NEW_RELEASE:
-                    {
-                        thisAmount += rental.DaysRented * 3;
-                        break;
-                    }
-                    case Movie.CHILDRENS:
-                    {
-                        thisAmount += 1.5;
-                        if (rental.DaysRented > 3)
-                        {
-                            thisAmount += (rental.DaysRented - 3) * 1.5;
-                        }
-                        break;
-                    }
-                }
+                thisAmount = AmountFor(rental);
 
                 // add frequent renter points
                 frequentRenterPoints++;
