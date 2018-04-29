@@ -19,6 +19,17 @@ namespace MovieRental.Common.Models
             _rentals.Add(arg);
         }
 
+        private int GetFrequentRenterPoints(Rental rental)
+        {
+            var frequentRenterPoints = 1;
+            // add bonus for a two day new release rental
+            if (rental.Movie.PriceCode == Movie.NEW_RELEASE && rental.DaysRented > 1)
+            {
+                frequentRenterPoints++;
+            }
+            return frequentRenterPoints;
+        }
+
         public string Statement()
         {
             double totalAmount = 0;
@@ -28,12 +39,7 @@ namespace MovieRental.Common.Models
             foreach(var rental in _rentals)
             {
                 // add frequent renter points
-                frequentRenterPoints++;
-                // add bonus for a two day new release rental
-                if (rental.Movie.PriceCode == Movie.NEW_RELEASE && rental.DaysRented > 1)
-                {
-                    frequentRenterPoints++;
-                }
+                frequentRenterPoints += GetFrequentRenterPoints(rental);
 
                 //show figures for this rental
                 result += $"\t{rental.Movie.Title}\t{rental.GetCharge()}{Environment.NewLine}";
