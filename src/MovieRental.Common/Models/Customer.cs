@@ -27,11 +27,6 @@ namespace MovieRental.Common.Models
 
             foreach(var rental in _rentals)
             {
-                double thisAmount = 0;
-
-                //determine amounts for each line
-                thisAmount = rental.GetCharge();
-
                 // add frequent renter points
                 frequentRenterPoints++;
                 // add bonus for a two day new release rental
@@ -41,8 +36,8 @@ namespace MovieRental.Common.Models
                 }
 
                 //show figures for this rental
-                result += $"\t{rental.Movie.Title}\t{thisAmount}{Environment.NewLine}";
-                totalAmount += thisAmount;
+                result += $"\t{rental.Movie.Title}\t{rental.GetCharge()}{Environment.NewLine}";
+                totalAmount += rental.GetCharge();
             }
 
             //add footer lines
