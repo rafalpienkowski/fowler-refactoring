@@ -19,40 +19,6 @@ namespace MovieRental.Common.Models
             _rentals.Add(arg);
         }
 
-
-        private double AmountFor(Rental rental)
-        {
-            double result = 0;
-            switch (rental.Movie.PriceCode)
-            {
-                case Movie.REGULAR:
-                {
-                    result += 2;
-                    if (rental.DaysRented > 2)
-                    {
-                        result += (rental.DaysRented - 2) * 1.5;
-                    }
-                    break;
-                }
-                case Movie.NEW_RELEASE:
-                {
-                    result += rental.DaysRented * 3;
-                    break;
-                }
-                case Movie.CHILDRENS:
-                {
-                    result += 1.5;
-                    if (rental.DaysRented > 3)
-                    {
-                        result += (rental.DaysRented - 3) * 1.5;
-                    }
-                    break;
-                }
-            }
-
-            return result;
-        }
-
         public string Statement()
         {
             double totalAmount = 0;
@@ -64,7 +30,7 @@ namespace MovieRental.Common.Models
                 double thisAmount = 0;
 
                 //determine amounts for each line
-                thisAmount = AmountFor(rental);
+                thisAmount = rental.GetCharge();
 
                 // add frequent renter points
                 frequentRenterPoints++;
