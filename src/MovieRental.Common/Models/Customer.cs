@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MovieRental.Common.Models
 {
-    class Customer
+    public class Customer
     {
         public string Name { get; private set; }
         private ICollection<Rental> _rentals = new List<Rental>();
@@ -66,7 +66,7 @@ namespace MovieRental.Common.Models
                 }
 
                 //show figures for this rental
-                result += $"\t{rental.Movie.Title}\t{thisAmount}";
+                result += $"\t{rental.Movie.Title}\t{thisAmount}{Environment.NewLine}";
                 totalAmount += thisAmount;
             }
 

@@ -1,6 +1,6 @@
 namespace MovieRental.Common.Models
 {
-    class Rental
+    public class Rental
     {
         public Movie Movie { get; private set; }
         public int DaysRented { get; private set; }
