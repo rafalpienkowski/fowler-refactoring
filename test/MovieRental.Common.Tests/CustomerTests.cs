@@ -5,23 +5,69 @@ using FluentAssertions;
 using System.Collections.Generic;
 using System.Linq;
 using MovieRental.Common.Tests.Builders;
+using System.Linq.Expressions;
 
 namespace MovieRental.Common.Tests
 {
+
+    public abstract class StatementBuilderBase
+    {
+        protected string _sampleCustomer = "John Kowalsky";
+        internal abstract string Build();
+    }
+
+    public class StatementBuilder : StatementBuilderBase
+    {
+        private readonly string _statementTemplate = @"Rental Record for {0}" + Environment.NewLine + "{1}Amount owed is {2}" + Environment.NewLine + "You earned {3} frequent renter points";
+
+        internal override string Build()
+        {
+            return string.Format(_statementTemplate, _sampleCustomer, string.Empty, 0, 0);
+        }
+    }
+
+    public class HtmlStatementBuilder : StatementBuilderBase
+    {
+        private readonly string _htmlStatementTemplate = @"<H1>Rentals for <EM>{0}</EM></H1><P>" + Environment.NewLine + "{1}<P>You owe <EM>{2}</EM></P>On this rental you earned <EM>{3}</EM> frequent renter points <P>";
+
+        internal override string Build()
+        {
+            return string.Format(_htmlStatementTemplate, _sampleCustomer, string.Empty, 0, 0);
+        }
+    }
+
     public class CustomerTests
     {
+        private static readonly Func<Customer,string> _statementCall = (c) => { return c.Statement(); };
+        private static readonly Func<Customer,string> _htmlStatementCall = (c) => { return c.Statement(); };
+
         private readonly string _sampleCustomer = "John Kowalsky";
         private readonly string _statementTemplate = @"Rental Record for {0}" + Environment.NewLine + "{1}Amount owed is {2}" + Environment.NewLine + "You earned {3} frequent renter points";
 
-        [Fact]
-        public void Statement_SampleCustomerWithoutRentals()
+
+        public static IEnumerable<object[]> Data()
+        {
+            yield return new object[] { 
+                new Func<string> =() => { return new StatementBuilder().Build(); }, 
+                new CustomerBuilder().Build(), 
+                _statementCall 
+            };
+
+            //yield return new object[] { new HtmlStatementBuilder().Build(), new CustomerBuilder().Build(), _htmlStatementCall };
+        }
+
+        [Theory]
+        [MemberData(nameof(Data))]
+        public void Statement_SampleCustomerWithoutRentalsData(Expression<Func<string>> expectedResultExpr, Expression<Func<Customer>> customerBuilderExpr, Func<Customer,string> customerCall)
         {
             // arrange
-            var expectedResult = string.Format(_statementTemplate, _sampleCustomer, string.Empty, 0, 0);
-            var custromer = new CustomerBuilder().Build();
+            var expectedResultFunc = expectedResultExpr.Compile();
+            var expectedResult = expectedResultFunc();
+            var custromerFunc = customerBuilderExpr.Compile();
+            var customer = custromerFunc();
 
             // act
-            var result = custromer.Statement();
+            var result = customerCall(customer);
 
             // assert
             result.Should().BeEquivalentTo(expectedResult);
