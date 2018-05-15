@@ -9,7 +9,31 @@ namespace MovieRental.Common.Models
         public const int NEW_RELEASE = 1;
 
         public string Title { get; private set; } 
-        public int PriceCode { get; set; }
+        public int PriceCode { 
+            get
+            {
+                return price.PriceCode;
+            } 
+            set
+            {
+                switch(value)
+                {
+                    case REGULAR:
+                        price = new RegularPrice();
+                        break;
+                    case NEW_RELEASE:
+                        price = new NewReleasePrice();
+                        break;
+                    case CHILDRENS:
+                        price = new ChildrensPrice();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Invalid price code: {value}");
+                }
+            }
+        }
+
+        private Price price;
 
         public Movie(string title, int priceCode)
         {
