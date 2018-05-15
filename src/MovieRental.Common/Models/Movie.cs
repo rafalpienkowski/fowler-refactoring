@@ -17,6 +17,17 @@ namespace MovieRental.Common.Models
             PriceCode = priceCode;
         }
 
+        public int GetFrequentRenterPoints(int daysRented)
+        {
+            var frequentRenterPoints = 1;
+            // add bonus for a two day new release rental
+            if (PriceCode == Movie.NEW_RELEASE && daysRented > 1)
+            {
+                frequentRenterPoints++;
+            }
+            return frequentRenterPoints;
+        }
+
         public double GetCharge(int daysRented)
         {
             double result = 0;
